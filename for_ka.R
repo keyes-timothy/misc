@@ -1,4 +1,4 @@
-# first, install the readr package
+# first, install the tidyverse package
 install.packages("tidyverse")
 
 # attach the package 
