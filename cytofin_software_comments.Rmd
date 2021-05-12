@@ -1,0 +1,69 @@
+---
+title: "CytofIN testing"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Setup 
+```{r}
+library(devtools)
+library(usethis)
+library(tidyverse)
+```
+
+
+# Installation
+
+```{r}
+install_github("bennyyclo/Cytofin")
+
+```
+
+Comments: Installation takes a while - way longer than I would expect. I think this is because you include a decent amount of data inside the package in the form of .fcs files (in `Cytofin/inst/extdata`). 
+
+# Loading
+
+```{r}
+library(cytofin)
+```
+
+
+# Documentation 
+
+Most R packages are documented not only on the function level, but also on the whole-package level. 
+
+```{r}
+help(package = "cytofin")
+```
+
+From running this command, we can see that your `DESCRIPTION` file (which should be at the root of your R package directory on your local machine) doesn't have the **Title** field filled in. I recommend filling it in with *Homogenize and Integrate Heterogeneous Mass Cytometry Data From Multiple Data Sets*.
+
+We can also see that there are 4 functions in this R package: 
+
+* `annorm()`: Normalize CyTOF data panel
+* `annorm_nrs()`: Normalize CyTOF data panel
+* `anprep()`: Prep CyTOF control for normalization
+* `homogenize()`: Homogenize CyTOF data panel
+
+
+```{r}
+
+```
+
+
+# Functions
+
+#
+
+
+
+
+
+
+
+
+
+
