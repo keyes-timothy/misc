@@ -56,8 +56,11 @@ From skimming the help files of these functions (using `?function_name`), I can 
 I've noticed in your NAMESPACE files only include the following 4 lines: 
 
 > export(annorm)
+
 > export(annorm_nrs)
+
 > export(anprep)
+
 > export(homogenize)
 
 Maybe the problem the reviewer had was because they were missing one of the package imports? Check out [this chapter](https://r-pkgs.org/namespace.html?q=import#imports) to make sure you're using the `@import` tag where you need to in your function documentation.
