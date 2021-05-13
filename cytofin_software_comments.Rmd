@@ -17,12 +17,13 @@ library(tidyverse)
 
 # Installation
 
-```{r}
-install_github("bennyyclo/Cytofin")
+I noticed in your README.md file on your GitHub repo for this package that you recommended installation using a nonstandard method (downloading the source package from github manually via the command line, then building the package locally using `devtools`). A slightly more streamlined way to do this is simply use `devtools` to download the package (and build it) directly from your GitHub repo, and this is what I would recommend you tell readers to do:
 
+```{r, eval = FALSE}
+install_github("bennyyclo/Cytofin")
 ```
 
-Comments: Installation takes a while - way longer than I would expect. I think this is because you include a decent amount of data inside the package in the form of .fcs files (in `Cytofin/inst/extdata`). 
+Comments: This works, but I will note that installation takes a while - way longer than I would expect. I think this is because you include a decent amount of data inside the package in the form of .fcs files (in `Cytofin/inst/extdata`). Maybe consider storing these data elsewhere - one option is to do what [previous authors from our lab did](https://github.com/kara-davis-lab/DDPR) and upload the files to their own GitHub repo (this is not standard, but it works). 
 
 # Loading
 
@@ -48,13 +49,87 @@ We can also see that there are 4 functions in this R package:
 * `anprep()`: Prep CyTOF control for normalization
 * `homogenize()`: Homogenize CyTOF data panel
 
+From skimming the help files of these functions (using `?function_name`), I can see that there are a few issues with the function documentation. One issue is that the parameters of each function are not specified correctly (@parameter needs to be specified on each line before the parameter name, and a text description for each parameter should be provided after that). I use [this book chapter](https://r-pkgs.org/man.html) to help me when I'm documenting functions with `roxygen2`. 
+
+# NAMESPACE
+
+I've noticed in your NAMESPACE files only include the following 4 lines: 
+
+> export(annorm)
+> export(annorm_nrs)
+> export(anprep)
+> export(homogenize)
+
+Maybe the problem the reviewer had was because they were missing one of the package imports? Check out [this chapter](https://r-pkgs.org/namespace.html?q=import#imports) to make sure you're using the `@import` tag where you need to in your function documentation.
+
+# R CMD Check
+
+I noticed that this packages doesn't pass the R CMD Check. I'm still trying to figure out why. 
+
+# Demo
+
+## Homogenization
 
 ```{r}
+#homogenize antigen panel, using the demo data supplied with the package
+metadata_filename <- 
+  paste0(path.package("cytofin"),"/extdata/test_metadata_raw.csv")
 
+panel_filename <- 
+  paste0(path.package("cytofin"),"/extdata/test_panel.csv")
+
+input_file_dir <- 
+  paste0(path.package("cytofin"),"/extdata/test_raw_fcs_files/")
+
+output_file_dir <- "out_test/"
+
+homogenize(metadata_filename, panel_filename, input_file_dir, output_file_dir)
 ```
 
+This runs on my computer, but something I notice is that you print a ton of statements to the console. Would it make more sense to save these to a text file that is also stored in the output directory? That way the user can reference the messages you sent during the homogenization but wouldn't necessarily have their console flooded while the algorithm runs. 
 
-# Functions
+## Prep external anchors
+
+```{r}
+#prep external anchor 
+anchor_metadata_filename <- paste0(path.package("cytofin"),"/extdata/test_anchor_metadata_raw.csv")
+input_file_dir <- output_file_dir #use the homogenized files
+anprep(anchor_metadata_filename, panel_filename, input_file_dir)
+```
+
+This runs on my local computer. I am not sure why the reviewer had problems with it, but I suspect that it was related to not having a necessary import (whereas I probably have the required package here on my computer already). 
+
+## Normalize data (external anchors)
+
+```{r}
+#data normalization using external anchors and meanshift transofmration function
+val_file_dir <- paste0(path.package("cytofin"),"/extdata/test_batch_fcs_files/")
+anchor_data_filename <- "./Prep_control.RData"
+output_file_dir <- "norm_test/"
+mode <- "meanshift"
+annorm(anchor_metadata_filename, anchor_data_filename, metadata_filename, panel_filename, 
+input_file_dir, val_file_dir, output_file_dir, mode)
+annorm(anchor_metadata_filename, anchor_data_filename, metadata_filename, panel_filename, 
+input_file_dir, "none", output_file_dir, mode)
+```
+
+This runs on my computer as well. 
+
+Do you want me to help make some slightly prettier visualizations? This is a strong-suit of mine, and something I enjoy doing. 
+
+## Normalize data (internal anchors)
+
+```{r}
+#data normalization using 4 internal channels and meanshift_bulk transformation function
+nchannels <- 4
+output_file_dir <- "norm_test2/"
+annorm_nrs(metadata_filename, panel_filename, input_file_dir, val_file_dir, 
+output_file_dir, nchannels)
+annorm_nrs(metadata_filename, panel_filename, input_file_dir, "none", 
+output_file_dir, nchannels)
+```
+
+This also ran on my computer, which suggests that the issue the reviewer had was probably due to imports. I can keep looking into this if you want. 
 
 #
 
